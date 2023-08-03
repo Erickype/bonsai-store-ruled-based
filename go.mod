@@ -1,4 +1,4 @@
-module encore.app
+module github.com/Erickype/bonsai-store-ruled-based
 
 go 1.20
 
