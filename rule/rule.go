@@ -2,7 +2,6 @@ package rule
 
 import (
 	"context"
-	"fmt"
 )
 
 // Rule is a representation of the GRule json format, used only the basic format.
@@ -18,7 +17,9 @@ type Rule struct {
 // Add inserts a Rule in the database
 //
 //encore:api public method=POST path=/rule
-func Add(_ context.Context, rule *Rule) error {
-	fmt.Print(rule)
-	return nil
+func Add(ctx context.Context, rule *Rule) error {
+	query := `insert into rule (name, "desc", salience, "when", "then")
+			values($1, $2, $3, $4, $5)`
+	_, err := ruleDb.Exec(ctx, query, rule.Name, rule.Desc, rule.Salience, rule.When, rule.Then)
+	return err
 }
