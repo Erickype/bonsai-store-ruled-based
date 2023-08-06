@@ -2,6 +2,7 @@ package rule
 
 import (
 	"context"
+	"encore.dev/beta/errs"
 )
 
 // Rule is a representation of the GRule json format, used only the basic format.
@@ -28,10 +29,13 @@ func Add(ctx context.Context, rule *Rule) error {
 	query := `insert into rule (name, "desc", salience, "when", "then")
 			values($1, $2, $3, $4, $5)`
 	_, err := ruleDb.Exec(ctx, query, rule.Name, rule.Desc, rule.Salience, rule.When, rule.Then)
-	return err
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// GetById return a rule based on its Id
+// GetById return a rule based on its ID
 //
 //encore:api public method=GET path=/rule/:id
 func GetById(ctx context.Context, id int) (*Rule, error) {
@@ -53,6 +57,15 @@ func Update(ctx context.Context, rule *Rule) error {
 	query := `UPDATE rule 
 			SET name = $1, "desc" = $2, salience = $3, "when" = $4, "then" = $5 
 			WHERE id = $6`
-	_, err := ruleDb.Exec(ctx, query, rule.Name, rule.Desc, rule.Salience, rule.When, rule.Then, rule.ID)
-	return err
+	result, err := ruleDb.Exec(ctx, query, rule.Name, rule.Desc, rule.Salience, rule.When, rule.Then, rule.ID)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return &errs.Error{
+			Code:    errs.NotFound,
+			Message: "rule not updated",
+		}
+	}
+	return nil
 }
