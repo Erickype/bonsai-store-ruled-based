@@ -22,6 +22,18 @@ type Rule struct {
 	Then []string `json:"then"`
 }
 
+type ConstValues interface {
+	string | int64 | float64 | bool
+}
+
+type Const[T ConstValues] struct {
+	Const []T `json:"const"`
+}
+
+type Obj struct {
+	Obj string `json:"obj"`
+}
+
 // Add inserts a Rule in the database
 //
 //encore:api public method=POST path=/rule
