@@ -2,6 +2,7 @@ package rule
 
 import (
 	"context"
+
 	"encore.dev/beta/errs"
 )
 
@@ -17,9 +18,35 @@ type Rule struct {
 	// Salience represent the relevance of the rule
 	Salience int64 `json:"salience"`
 	// When are the conditions of the rule
-	When string `json:"when"`
+	When When `json:"when"`
 	// Then represents the action when the condition is true
-	Then []string `json:"then"`
+	Then []Then `json:"then"`
+}
+
+type Eq struct {
+	Obj   string `json:"obj,omitempty"`
+	Const bool   `json:"const,omitempty"`
+}
+type Lt struct {
+	Obj string `json:"obj,omitempty"`
+}
+type And struct {
+	Eq []Eq `json:"eq,omitempty"`
+	Lt []Lt `json:"lt,omitempty"`
+}
+type When struct {
+	And []And `json:"and,omitempty"`
+}
+type Plus struct {
+	Obj string `json:"obj,omitempty"`
+}
+type Set struct {
+	Obj  string `json:"obj,omitempty"`
+	Plus []Plus `json:"plus,omitempty"`
+}
+
+type Then struct {
+	Set  []Set `json:"set,omitempty"`
 }
 
 // Add inserts a Rule in the database
