@@ -8,11 +8,11 @@ type ListResponse struct {
 	Rules []*Rule
 }
 
-// Get return the list of rules
+// Get return the list of rules, just the ID, name, desc and salience
 //
 //encore:api public method=GET path=/rule
 func Get(ctx context.Context) (*ListResponse, error) {
-	query := "select * from rule"
+	query := "select ID, name, 'des', salience from rule"
 	rows, err := ruleDb.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func Get(ctx context.Context) (*ListResponse, error) {
 
 	for rows.Next() {
 		rule := &Rule{}
-		err = rows.Scan(&rule.ID, &rule.Name, &rule.Desc, &rule.Salience, &rule.When, &rule.Then)
+		err = rows.Scan(&rule.ID, &rule.Name, &rule.Desc, &rule.Salience)
 		if err != nil {
 			return nil, err
 		}
