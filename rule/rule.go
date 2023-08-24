@@ -14,9 +14,9 @@ type Rule struct {
 	// Salience represent the relevance of the rule
 	Salience int64 `json:"salience"`
 	// When are the conditions of the rule, there is a compoud condition that are a map of operators with a PairExpresion
-	When map[string][]map[string]PairExpresion `json:"when"`
+	When map[string][]map[string][]PairExpresion `json:"when"`
 	// Then represents the action when the condition is true
-	Then string `json:"then"`
+	Then []Then `json:"then"`
 }
 
 // PairExpresion represents the inner values of an operator, this could be the convination of "obj" and "const"
@@ -25,4 +25,18 @@ type PairExpresion struct {
 	Obj string `json:"obj,omitempty"`
 	// Const value to be applied. Values accepted: string, int, float, bool
 	Const json.RawMessage `json:"const,omitempty"`
+}
+
+type Then struct {
+	Set  []SetExp          `json:"set,omitempty"`
+	Call []json.RawMessage `json:"call,omitempty"`
+}
+
+type SetExp struct {
+	Obj   string          `json:"obj,omitempty"`
+	Plus  []PairExpresion `json:"plus,omitempty"`
+	Minus []PairExpresion `json:"minus,omitempty"`
+	Div   []PairExpresion `json:"div,omitempty"`
+	Mul   []PairExpresion `json:"mul,omitempty"`
+	Mod   []PairExpresion `json:"mod,omitempty"`
 }
