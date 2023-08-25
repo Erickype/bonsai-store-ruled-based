@@ -1,6 +1,9 @@
 package rule
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+)
 
 // ListResponse is the response of the Get method
 type ListResponse struct {
@@ -35,13 +38,21 @@ func Get(ctx context.Context) (*ListResponse, error) {
 //
 //encore:api public method=GET path=/rule/:id
 func GetById(ctx context.Context, id int) (*Rule, error) {
-	query := `select * from rule
+	query := `select json_data from rule
 			where id = $1`
 	row := ruleDb.QueryRow(ctx, query, id)
-	rule := &Rule{}
-	err := row.Scan(&rule.ID, &rule.Name, &rule.Desc, &rule.Salience, &rule.When, &rule.Then)
+	var jsonData []byte
+	err := row.Scan(&jsonData)
 	if err != nil {
 		return nil, err
 	}
-	return rule, nil
+
+	var rule Rule
+	err = json.Unmarshal(jsonData, &rule)
+	if err != nil {
+		return nil, err
+	}
+	rule.ID = id
+
+	return &rule, nil
 }
