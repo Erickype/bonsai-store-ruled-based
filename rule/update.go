@@ -2,6 +2,7 @@ package rule
 
 import (
 	"context"
+	"encoding/json"
 
 	"encore.dev/beta/errs"
 )
@@ -10,10 +11,16 @@ import (
 //
 //encore:api public method=PUT path=/rule
 func Update(ctx context.Context, rule *Rule) error {
+	id := rule.ID
+	rule.ID = 0
+	json_rule, err := json.Marshal(rule)
+	if err != nil {
+		return err
+	}
 	query := `update rule 
-			SET name = $1, "desc" = $2, salience = $3, "when" = $4, "then" = $5 
-			WHERE id = $6`
-	result, err := ruleDb.Exec(ctx, query, rule.Name, rule.Desc, rule.Salience, rule.When, rule.Then, rule.ID)
+			SET name = $1, "desc" = $2, salience = $3, json_data = $4
+			WHERE id = $5`
+	result, err := ruleDb.Exec(ctx, query, rule.Name, rule.Desc, rule.Salience, json_rule, id)
 	if err != nil {
 		return err
 	}
