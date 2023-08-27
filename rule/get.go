@@ -15,7 +15,7 @@ type ListResponse struct {
 //
 //encore:api public method=GET path=/rule
 func Get(ctx context.Context) (*ListResponse, error) {
-	query := "select ID, name, desc, salience from rule"
+	query := 'select ID, name, "desc", salience from rule'
 	rows, err := ruleDb.Query(ctx, query)
 	if err != nil {
 		return nil, err
