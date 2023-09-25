@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"encore.dev/beta/auth"
+	"encore.dev/storage/sqldb"
+	"encore.dev/types/uuid"
 	firebase "firebase.google.com/go/v4"
 	fbauth "firebase.google.com/go/v4/auth"
 	"go4.org/syncutil"
@@ -20,10 +22,20 @@ type Data struct {
 	Picture string
 }
 
+func CheckUser(context context.Context, uuid uuid.UUID) error {
+	query := "select uuid from user where uuid = $1"
+	_, err := sqldb.Exec(context, query, uuid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // ValidateToken validates an auth token against Firebase Auth.
+//
 //encore:authhandler
 func ValidateToken(ctx context.Context, token string) (auth.UID, *Data, error) {
-    if err := setupFB(); err != nil {
+	if err := setupFB(); err != nil {
 		return "", nil, err
 	}
 	tok, err := fbAuth.VerifyIDToken(ctx, token)
@@ -44,7 +56,6 @@ func ValidateToken(ctx context.Context, token string) (auth.UID, *Data, error) {
 	return uid, usr, nil
 }
 
-
 var (
 	fbAuth    *fbauth.Client
 	setupOnce syncutil.Once
@@ -52,18 +63,17 @@ var (
 
 // setupFB ensures Firebase Auth is setup.
 func setupFB() error {
-    return setupOnce.Do(func() error {
-        opt := option.WithCredentialsJSON([]byte(secrets.FirebasePrivateKey))
-        app, err := firebase.NewApp(context.Background(), nil, opt)
-        if err == nil {
-            fbAuth, err = app.Auth(context.Background())
-        }
-        return err
-    })
+	return setupOnce.Do(func() error {
+		opt := option.WithCredentialsJSON([]byte(secrets.FirebasePrivateKey))
+		app, err := firebase.NewApp(context.Background(), nil, opt)
+		if err == nil {
+			fbAuth, err = app.Auth(context.Background())
+		}
+		return err
+	})
 }
 
 var secrets struct {
 	// FirebasePrivateKey is the JSON credentials for calling Firebase.
 	FirebasePrivateKey string
 }
-
