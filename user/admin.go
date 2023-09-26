@@ -11,7 +11,7 @@ import (
 //
 //encore:api auth method=POST path=/user/admin/:email
 func MakeAdmin(context context.Context, email string) error {
-	user, err := fbAuth.GetUserByEmail(context, email)
+	user, err := GetUserByEmail(context, email)
 	if err != nil {
 		return &errs.Error{
 			Code:    errs.NotFound,
@@ -26,4 +26,23 @@ func MakeAdmin(context context.Context, email string) error {
 		return err
 	}
 	return nil
+}
+
+// CheckAdminResponse is the response of CheckAdmin endpoint
+type CheckAdminResponse struct {
+	IsAdmin bool `json:"isAdmin"`
+}
+
+// CheckAdmin checks if the user is an admin
+//
+//encore:api auth method=GET path=/user/admin/:email
+func CheckAdmin(context context.Context, email string) (*CheckAdminResponse, error) {
+	user, err := GetUserByEmail(context, email)
+	if err != nil {
+		return &CheckAdminResponse{IsAdmin: false}, err
+	}
+	query := `select admin from "user"
+			  where uuid = $1`
+	sqldb.Exec(context, query, user.UID)
+	return &CheckAdminResponse{IsAdmin: true}, nil
 }
