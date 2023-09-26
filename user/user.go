@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"encore.dev/beta/auth"
-	"encore.dev/storage/sqldb"
-	"encore.dev/types/uuid"
 	firebase "firebase.google.com/go/v4"
 	fbauth "firebase.google.com/go/v4/auth"
 	"go4.org/syncutil"
@@ -20,15 +18,6 @@ type Data struct {
 	Name string
 	// Picture is the user's picture URL.
 	Picture string
-}
-
-func CheckUser(context context.Context, uuid uuid.UUID) error {
-	query := "select uuid from user where uuid = $1"
-	_, err := sqldb.Exec(context, query, uuid)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // ValidateToken validates an auth token against Firebase Auth.
