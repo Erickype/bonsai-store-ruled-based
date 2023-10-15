@@ -7,7 +7,7 @@ import (
 // GetById returns the information of a category based on the id from path
 // returns a Category struct.
 //
-//encore:api public method=GET path=/subcategory/category/:id
+//encore:api public method=GET path=/category/:id
 func GetById(ctx context.Context, id int64) (*Category, error) {
 	category := &Category{}
 	query := `select *

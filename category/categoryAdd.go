@@ -20,7 +20,7 @@ type AddRequest struct {
 
 // Add insert a category in the database
 //
-//encore:api method=POST path=/subcategory/category
+//encore:api method=POST path=/category
 func Add(ctx context.Context, category *AddRequest) (*AddResponse, error) {
 	response := &AddResponse{}
 	query := `insert into public.category (name, description)
