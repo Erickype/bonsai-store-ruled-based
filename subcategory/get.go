@@ -22,10 +22,14 @@ func GetByID(ctx context.Context, id int64) (*Subcategory, error) {
 	return subcategory, nil
 }
 
+// SubcategoriesResponse is a response that holds a list of subcategories, can be used in different methods
 type SubcategoriesResponse struct {
+	// Subcategories is a list of Subcategory
 	Subcategories []*Subcategory
 }
 
+// GetByCategory returns a list of subcategories based on a category id passed as paramether
+//
 //encore:api method=GET path=/subcategory/category/:categoryID
 func GetByCategory(ctx context.Context, categoryID int64) (*SubcategoriesResponse, error) {
 	response := &SubcategoriesResponse{}
