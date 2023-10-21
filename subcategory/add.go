@@ -25,7 +25,7 @@ type AddResponse struct {
 
 // Add creates a subcategory, the parent category must exist to create a subcategory.
 //
-// encore:api method=POST path=/subcategory/subcategory
+// encore:api method=POST path=/subcategory
 func Add(ctx context.Context, subcategory *AddRequest) (*AddResponse, error) {
 	response := &AddResponse{}
 	_, err := category.GetById(ctx, subcategory.Category)
